@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div id="app">
+      <div class="custom-table-tooltip">
+        <div class="custom-search-container">
+          <input id="custom-search" type="search" placeholder="Search" />
+        </div>
+        <!-- Toggle table column checkbox dropdown -->
+        <div class="dropdown" data-control="checkbox-dropdown">
+          <label class="dropdown-label">Select</label>
+
+          <div class="dropdown-list">
+            <!-- <a href="#" data-toggle="check-all" class="dropdown-option">
+                Check All
+              </a> -->
+            <label v-for="thead in tableHeader" class="dropdown-option">
+              <input type="checkbox" name="dropdown-group" />
+              {{thead.Value}}
+            </label>
+          </div>
+        </div>
+        <!-- End Toggle table column checkbox dropdown -->
+      </div>
+
+      <table id="example" class="stripe" style="width: 100%">
+        <thead>
+          <tr>
+            <template v-for="(item, index) in tableHeader">
+              <th
+                v-if="item.IsTitle && item.RowSort == 0"
+                :colspan="item.ColSpan"
+                :rowspan="item.RowSpan"
+              >
+                {{item.Value}}
+              </th>
+            </template>
+
+            <!-- <th>Speed</th>
+            <th>Module Supplier</th>
+            <th>Density</th>
+            <th># of Ranks x DRAM devices</th>
+            <th>Module P/N.</th>
+            <th>SS/DS</th>
+            <th>Chip Brand</th> -->
+          </tr>
+          <tr>
+            <template v-for="(item, index) in tableHeader">
+              <th
+                v-if="item.IsTitle && item.RowSort == 1"
+                :colspan="item.ColSpan"
+                :rowspan="item.RowSpan"
+              >
+                {{item.Value}}
+              </th>
+            </template>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="row in tableDataArray">
+            <td v-for="col in row">{{col.Value}}</td>
+          </tr>
+          <!-- <tr>
+            <td>5000</td>
+            <td>Thermaltake</td>
+            <td>8GB</td>
+            <td>1Rx8</td>
+            <td>AHU08GGB30CKU8R (EK.16GAZ.GJDK2)</td>
+            <td>SS</td>
+            <td>Samsung</td>
+          </tr> -->
+        </tbody>
+      </table>
+    </div>
+
+    <script src="./jquery.js"></script>
+    <script
+      type="text/javascript"
+      src="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.js"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="./index.js"></script>
+  </body>
+</html>
