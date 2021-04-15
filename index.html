@@ -14,26 +14,54 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <!-- 個別欄位篩選 -->
+    <!-- <div id="position">
+      <input type="checkbox" name="pos" value="4800" />speed 4800
+      <input type="checkbox" name="pos" value="4500" />speed 4500
+    </div> -->
+    <!-- End 個別欄位篩選 -->
     <div id="app">
       <div class="custom-table-tooltip">
-        <div class="custom-search-container">
-          <input id="custom-search" type="search" placeholder="Search" />
-        </div>
-        <!-- Toggle table column checkbox dropdown -->
-        <div class="dropdown" data-control="checkbox-dropdown">
-          <label class="dropdown-label">Select</label>
+        <div class="left"></div>
+        <div class="right">
+          <!-- Toggle table column checkbox dropdown -->
+          <div class="dropdown" data-control="checkbox-dropdown">
+            <label class="dropdown-label">Column <span class="grey-text">Filed</span></label>
 
-          <div class="dropdown-list">
-            <!-- <a href="#" data-toggle="check-all" class="dropdown-option">
+            <div class="dropdown-list">
+              <!-- 全選按鈕 -->
+              <!-- <a href="#" data-toggle="check-all" class="dropdown-option">
                 Check All
               </a> -->
-            <label v-for="thead in tableHeader" class="dropdown-option">
-              <input type="checkbox" name="dropdown-group" />
-              {{thead.Value}}
-            </label>
+              <template v-for="thead in tableHeader">
+                <label v-if="thead.RowSort == 0" class="dropdown-option">
+                  <input
+                    type="checkbox"
+                    :value="thead.ColumnSort"
+                    name="dropdown-group"
+                    :data-colspan="thead.ColSpan"
+                  />
+                  {{thead.Value}}
+                </label>
+              </template>
+              <!-- <label v-for="thead in tableHeader" class="dropdown-option">
+      <input
+        type="checkbox"
+        :value="thead.ColumnSort"
+        name="dropdown-group"
+      />
+      {{thead.Value}}
+    </label> -->
+            </div>
           </div>
+          <!-- End Toggle table column checkbox dropdown -->
+          <!-- Custom Search input -->
+          <div class="custom-search-container">
+            <input id="custom-search" type="search" />
+            <div class="placeholder">Search <span class="grey-text">Memory</span></div>
+          </div>
+          <!-- End Custom Search input -->
         </div>
-        <!-- End Toggle table column checkbox dropdown -->
       </div>
 
       <table id="example" class="stripe" style="width: 100%">

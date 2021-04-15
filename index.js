@@ -1,4 +1,27 @@
 $(document).ready(function () {
+  // data table indibvidual column filter extension
+  // $.fn.dataTable.ext.search.push(
+  //   function( settings, searchData, index, rowData, counter ) {
+  //     var positions = $('input:checkbox[name="pos"]:checked').map(function() {
+  //       return this.value;
+  //     }).get();
+
+  //     if (positions.length === 0) {
+  //       return true;
+  //     }
+
+  //     if (positions.indexOf(searchData[1]) !== -1) {
+  //       return true;
+  //     }
+
+  //     return false;
+  //   }
+  // );
+
+  $('input:checkbox[name="pos"]').on("change", function () {
+    table.draw();
+  });
+
   // checkbox dropdown
   var CheckboxDropdown = function (el) {
     var _this = this;
@@ -29,7 +52,7 @@ $(document).ready(function () {
 
   CheckboxDropdown.prototype.onCheckBox = function ($checkbox) {
     this.updateTableColumnVisible($checkbox);
-    this.updateStatus();
+    //this.updateStatus();
   };
 
   CheckboxDropdown.prototype.updateStatus = function () {
@@ -62,7 +85,7 @@ $(document).ready(function () {
       this.$inputs.prop("checked", false);
     }
 
-    this.updateStatus();
+    //this.updateStatus();
   };
 
   CheckboxDropdown.prototype.toggleOpen = function (forceOpen) {
@@ -84,7 +107,18 @@ $(document).ready(function () {
   };
 
   CheckboxDropdown.prototype.updateTableColumnVisible = function ($checkbox) {
-    const index = this.$inputs.index($checkbox);
+    const colspan = $checkbox.data("colspan");
+    const index = $checkbox.val();
+
+    if (colspan > 1) {
+      let indexArr = [];
+      for (let i = 0; i < colspan; i++) {
+        indexArr.push(i + parseInt(index));
+      }
+      table.columns(indexArr).visible($checkbox.is(":checked"));
+      return;
+    }
+
     const column = table.column(index);
     column.visible($checkbox.is(":checked"));
   };
@@ -104,35 +138,60 @@ $(document).ready(function () {
         self.tableHeader = data.filter((item) => item.IsTitle);
         self.tableData = data.filter((item) => !item.IsTitle);
         self.formatTableBodyData();
+        self.$nextTick(function () {
+          const $searchContainer = $(".custom-search-container");
+          const $customSearchInput = $("#custom-search");
+
+          table = $("#example").DataTable({
+            fixedHeader: true,
+            // pageLength: 25,
+            dom: "lrtip",
+            // bLengthChange: false,
+            "bInfo" : false,
+            ordering: false,
+            columnDefs: [
+              {
+                targets: "_all",
+                className: "dt-center",
+              },
+            ],
+            "language": {
+              "paginate": {
+                "previous": "&lt;",
+                "next": "&gt;"
+              }
+            }
+          });
+
+          var checkboxesDropdowns = document.querySelectorAll(
+            '[data-control="checkbox-dropdown"]'
+          );
+          for (
+            var i = 0, length = checkboxesDropdowns.length;
+            i < length;
+            i++
+          ) {
+            new CheckboxDropdown(checkboxesDropdowns[i]);
+          }
+          $customSearchInput.focus(function () {
+            $searchContainer.addClass("active");
+          });
+          $customSearchInput.focusout(function () {
+            if (!$customSearchInput.val()) {
+              $searchContainer.removeClass("active");
+            }
+          });
+          $customSearchInput.on("input", function () {
+            const val = $(this).val();
+            if (val) {
+              $searchContainer.addClass("active");
+            } else {
+              $searchContainer.removeClass("active");
+            }
+            table.search(val).draw();
+          });
+        });
       });
-    },
-    mounted() {
-      setTimeout(function () {
-        table = $("#example").DataTable({
-          fixedHeader: true,
-          pageLength: 25,
-          dom: 'lrtip',
-          ordering: false,
-          columnDefs: [
-            {
-              targets: "_all",
-              className: "dt-center",
-            },
-          ],
-        });
-
-        var checkboxesDropdowns = document.querySelectorAll(
-          '[data-control="checkbox-dropdown"]'
-        );
-        for (var i = 0, length = checkboxesDropdowns.length; i < length; i++) {
-          new CheckboxDropdown(checkboxesDropdowns[i]);
-        }
-
-        // set custom search input
-        $("#custom-search").keyup(function () {
-          table.search($(this).val()).draw();
-        });
-      }, 500);
     },
     methods: {
       getColCount: function () {
@@ -159,6 +218,4 @@ $(document).ready(function () {
       },
     },
   });
-
-  
 });
